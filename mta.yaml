@@ -1,0 +1,80 @@
+_schema-version: "3.2"
+ID: react-frontend-test
+version: 0.0.1
+modules:
+- name: react-frontend-test-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: react-frontend-test-destination-service
+    parameters:
+      content-target: true
+  - name: react-frontend-test_html_repo_host
+    parameters:
+      service-key:
+        name: react-frontend-test_html_repo_host-key
+  - name: uaa_react-frontend-test
+    parameters:
+      service-key:
+        name: uaa_react-frontend-test-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: react_demo_service_react_frontend_test_html_repo_host
+          ServiceInstanceName: react-frontend-test-html5-app-host-service
+          ServiceKeyName: react-frontend-test_html_repo_host-key
+          sap.cloud.service: react-demo-service
+        - Authentication: OAuth2UserTokenExchange
+          Name: react_demo_service_uaa_react_frontend_test
+          ServiceInstanceName: react-frontend-test-xsuaa-service
+          ServiceKeyName: uaa_react-frontend-test-key
+          sap.cloud.service: react-demo-service
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: react-frontend-test_ui_deployer
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: react-frontend-test_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - react-demo-test-content.zip
+      name: react-demo-test
+      target-path: resources/
+- name: react-demo-test
+  type: html5
+  path: react-demo-test
+  build-parameters:
+    builder: custom
+    commands:
+    - npm install
+    - npm run build
+    supported-platforms: []
+resources:
+- name: react-frontend-test-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      version: 1.0.0
+    service: destination
+    service-name: react-frontend-test-destination-service
+    service-plan: lite
+- name: react-frontend-test_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: react-frontend-test-html5-app-host-service
+    service-plan: app-host
+- name: uaa_react-frontend-test
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: react-frontend-test-xsuaa-service
+    service-plan: application
