@@ -23,7 +23,7 @@ export default function AppMainBar() {
       <Toolbar>
         <img width={40} src={logoIcon} alt="Logo" />
         <Typography variant="h4" className={classes.title}>
-          {"react-demo-test"}
+          {"react-demo-test jastech"}
         </Typography>
       </Toolbar>
     </AppBar>
